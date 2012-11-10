@@ -1,7 +1,7 @@
 AI Sandbox Go Bindings
 ======================
 
-These are Go bindings to handle connection with http://aisandbox.com/ game server.
+Go bindings to handle connection with http://aisandbox.com/ game server.
 
 Instructions
 ------------
@@ -16,7 +16,9 @@ Then import the library to your code and call
     in, out, err := aisandbox.Connect("TerminatorKillerX", "serverhostname", port)
 
 in: Channel where you receive parsed structs coming from the server.
+
 out: Channel where you send your command structs
+
 err: Possible error when connecting.
 
 Notes
