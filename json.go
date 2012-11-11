@@ -3,6 +3,29 @@
 // License: See LICENSE file.
 package aisandbox
 
+import (
+	"encoding/json"
+)
+
+// Workaround for JSON strings that are null
+type Nstring string
+
+func (n *Nstring) UnmarshalJSON(b []byte) (err error) {
+	if string(b) == "null" {
+		return nil
+	}
+	return json.Unmarshal(b, (*string)(n))
+}
+
+type Nfloat64 float64
+
+func (n *Nfloat64) UnmarshalJSON(b []byte) (err error) {
+	if string(b) == "null" {
+		return nil
+	}
+	return json.Unmarshal(b, (*float64)(n))
+}
+
 type json_GameInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
@@ -36,11 +59,11 @@ func (data *json_GameInfo) simplify() *GameInfo {
 			Team:            v.Bots[name].Value.Team,
 			Position:        v.Bots[name].Value.Position,
 			FacingDirection: v.Bots[name].Value.FacingDirection,
-			Flag:            v.Bots[name].Value.Flag,
-			CurrentAction:   v.Bots[name].Value.CurrentAction,
-			State:           v.Bots[name].Value.State,
-			Health:          v.Bots[name].Value.Health,
-			SeenLast:        v.Bots[name].Value.SeenLast,
+			Flag:            string(v.Bots[name].Value.Flag),
+			CurrentAction:   string(v.Bots[name].Value.CurrentAction),
+			State:           float64(v.Bots[name].Value.State),
+			Health:          float64(v.Bots[name].Value.Health),
+			SeenLast:        float64(v.Bots[name].Value.SeenLast),
 		}
 	}
 
@@ -50,11 +73,11 @@ func (data *json_GameInfo) simplify() *GameInfo {
 			Team:            v.Bots[name].Value.Team,
 			Position:        v.Bots[name].Value.Position,
 			FacingDirection: v.Bots[name].Value.FacingDirection,
-			Flag:            v.Bots[name].Value.Flag,
-			CurrentAction:   v.Bots[name].Value.CurrentAction,
-			State:           v.Bots[name].Value.State,
-			Health:          v.Bots[name].Value.Health,
-			SeenLast:        v.Bots[name].Value.SeenLast,
+			Flag:            string(v.Bots[name].Value.Flag),
+			CurrentAction:   string(v.Bots[name].Value.CurrentAction),
+			State:           float64(v.Bots[name].Value.State),
+			Health:          float64(v.Bots[name].Value.Health),
+			SeenLast:        float64(v.Bots[name].Value.SeenLast),
 		}
 
 		for _, seenby := range v.Bots[name].Value.SeenBy {
@@ -80,13 +103,13 @@ func (data *json_GameInfo) simplify() *GameInfo {
 
 	ownflaginfo := &FlagInfo{
 		Position:     ownflag.Position,
-		Carrier:      enemybots[ownflag.Carrier],
+		Carrier:      enemybots[string(ownflag.Carrier)],
 		RespawnTimer: ownflag.RespawnTimer,
 	}
 
 	enemyflaginfo := &FlagInfo{
 		Position:     enemyflag.Position,
-		Carrier:      ownbots[enemyflag.Carrier],
+		Carrier:      ownbots[string(enemyflag.Carrier)],
 		RespawnTimer: enemyflag.RespawnTimer,
 	}
 
@@ -117,6 +140,7 @@ func (data *json_GameInfo) simplify() *GameInfo {
 		TimeToNextRespawn: match.TimeToNextRespawn,
 	}
 
+	// TODO: map instigator field to target?
 	for _, event := range match.CombatEvents {
 		matchinfo.CombatEvents = append(matchinfo.CombatEvents, event.Value)
 	}
@@ -153,7 +177,7 @@ type json_FlagInfo struct {
 		Name         string    `json:"name"`
 		Team         string    `json:"team"`
 		Position     []float64 `json:"position"`
-		Carrier      string    `json:"carrier, omitempty"` // optional bot name, null if the flag is not being carried
+		Carrier      Nstring   `json:"carrier, omitempty"` // optional bot name, null if the flag is not being carried
 		RespawnTimer float64   `json:"respawnTimer"`
 	} `json:"__value__"`
 }
@@ -165,12 +189,12 @@ type json_BotInfo struct {
 		Team            string    `json:"team"`
 		Position        []float64 `json:"position, omitempty"`        // optional, null if the bot is not visible
 		FacingDirection []float64 `json:"facingDirection, omitempty"` // optional, null if the bot is not visible
-		Flag            string    `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
-		CurrentAction   string    `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
+		Flag            Nstring   `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
+		CurrentAction   Nstring   `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
 		// values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
-		State          float64  `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
-		Health         float64  `json:"health, omitempty"`   // optional, null if the bot is not visible
-		SeenLast       float64  `json:"seenlast, omitempty"` // time since the object was last seen, null if the object was never seen
+		State          Nfloat64 `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
+		Health         Nfloat64 `json:"health, omitempty"`   // optional, null if the bot is not visible
+		SeenLast       Nfloat64 `json:"seenlast, omitempty"` // time since the object was last seen, null if the object was never seen
 		VisibleEnemies []string `json:"visibleEnemies"`      // list of bot names for bots which this bot can see
 		SeenBy         []string `json:"seenBy"`              // list of bot names for bots which can see this bot
 	} `json:"__value__"`

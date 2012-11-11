@@ -61,10 +61,10 @@ type MatchInfo struct {
 
 type CombatEvent struct {
 	Type       float64 `json:"type"`                  // values are 0 = none, 1 = bot killed, 2 = flag picked up, 3 = flag dropped (more to be added soon)
-	Instigator string  `json:"instigator, omitempty"` // optional bot name that caused the event, null if the event was automatic (eg flag reset, bot respawn)
+	Instigator Nstring `json:"instigator, omitempty"` // optional bot name that caused the event, null if the event was automatic (eg flag reset, bot respawn)
 	// can either be a FlagInfo or a BotInfo name
-	Subject string `json:"subject"` // bot or flag name that was the subject of the event
-	Time    string `json:"time"`
+	Subject string  `json:"subject"` // bot or flag name that was the subject of the event
+	Time    float64 `json:"time"`
 }
 
 type Defend struct {
