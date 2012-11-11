@@ -22,41 +22,51 @@ func main() {
 		// When LevelInfo is received..
 		case *aisandbox.LevelInfo:
 			log.Println("Level loaded")
-			width, height = m.Value.Width, m.Value.Height
+			width, height = m.Width, m.Height
 			log.Println(width, height)
 		// And the main game status updates
 		case *aisandbox.GameInfo:
 			var target []float64
 			var text string
+			var team *aisandbox.TeamInfo
 
-			// Select one bot from own team (doesn't check if the bot is dead :)
-			bot := rand.Intn(len(m.Value.Teams[m.Value.Team].Value.Members))
+			for _, bot := range m.Team.Members {
+				if bot.Health == 0 {
+					continue
+				}
 
-			// Throw in couple random numbers
-			r, r2 := rand.Intn(3), rand.Intn(2)
-			// Select either own or enemy team as target
-			if r2 == 0 {
-				text = m.Value.Team
-			} else {
-				text = m.Value.EnemyTeam
+				// Only update command 1/10 of the time.
+				if r := rand.Float64(); r > 0.1 {
+					continue
+				}
+
+				// Throw in couple random numbers
+				r, r2 := rand.Intn(3), rand.Intn(2)
+				// Select either own or enemy team as target
+				if r2 == 0 {
+					team = m.Team
+				} else {
+					team = m.EnemyTeam
+				}
+
+				switch r {
+				case 0:
+					// Attack current flag position of target team
+					target = team.Flag.Position
+					text = fmt.Sprintf("%s flag.", team.Name)
+
+				case 1:
+					// Attack spawn location of target teams flag
+					target = team.FlagScoreLocation
+					text = fmt.Sprintf("%s score location.", team.Name)
+				case 2:
+					// Attack random point on the map
+					// XXX: Doesn't check if target is possible.
+					target = []float64{rand.Float64() * width, rand.Float64() * height}
+					text = fmt.Sprintf("[%.2f, %.2f].", target[0], target[1])
+				}
+				out <- attack(bot.Name, target, text)
 			}
-			switch r {
-			case 0:
-				// Attack current flag position of target team
-				target = m.Value.Flags[text+"Flag"].Value.Position
-				text = fmt.Sprintf("%s flag.", text)
-
-			case 1:
-				// Attack spawn location of target teams flag
-				target = m.Value.Teams[text].Value.FlagScoreLocation
-				text = fmt.Sprintf("%s score location.", text)
-			case 2:
-				// Attack random point on the map
-				// XXX: Doesn't check if target is possible.
-				target = []float64{rand.Float64() * width, rand.Float64() * height}
-				text = fmt.Sprintf("[%.2f, %.2f].", target[0], target[1])
-			}
-			out <- attack(m.Value.Teams[m.Value.Team].Value.Members[bot], target, text)
 		}
 	}
 

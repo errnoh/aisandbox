@@ -30,8 +30,8 @@ func run(name string, c chan interface{}) {
 		err         error
 		buffer      []byte
 		message     string
-		gameinfo    *GameInfo
-		levelinfo   *LevelInfo
+		gameinfo    *JSON_GameInfo
+		levelinfo   *JSON_LevelInfo
 		initialized bool
 	)
 	// Register with the server
@@ -52,30 +52,32 @@ loop:
 				log.Printf("Unexpected initialize message '%s'", message)
 			}
 			// Read level info
-			levelinfo = new(LevelInfo)
-			if buffer, err = parseJSON(&levelinfo); err != nil {
+			levelinfo = new(JSON_LevelInfo)
+			if err = parseJSON(&levelinfo); err != nil {
 				log.Println(err)
 				continue
 			}
 			// Read game info
-			gameinfo = new(GameInfo)
-			if buffer, err = parseJSON(&gameinfo); err != nil {
+			gameinfo = new(JSON_GameInfo)
+			if err = parseJSON(&gameinfo); err != nil {
 				log.Println(err)
 				continue
 			}
-			c <- levelinfo
-			c <- gameinfo
+			// Only send the actual data of LevelInfo
+			c <- levelinfo.Value
+			// Make GameInfo more intuitive to use
+			c <- gameinfo.simplify()
 			initialized = true
 		case "<tick>":
 			if !initialized {
 				log.Printf("Unexpected message '%s' while waiting for initialize", message)
 			}
-			gameinfo = new(GameInfo)
-			if buffer, err = parseJSON(&gameinfo); err != nil {
+			gameinfo = new(JSON_GameInfo)
+			if err = parseJSON(&gameinfo); err != nil {
 				log.Println(err)
 				continue
 			}
-			c <- gameinfo
+			c <- gameinfo.simplify()
 		case "<shutdown>":
 			if !initialized {
 				log.Printf("Unexpected message '%s' while waiting for initialize", message)
@@ -110,7 +112,9 @@ func listen(c chan interface{}) {
 }
 
 // NOTE: AiSandbox spec says that messages can't contain newlines.
-func parseJSON(target interface{}) (buffer []byte, err error) {
+func parseJSON(target interface{}) (err error) {
+	var buffer []byte
+
 	if buffer, err = bufConn.ReadBytes('\n'); err != nil {
 		log.Println(err)
 		return
