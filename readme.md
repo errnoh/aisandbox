@@ -42,6 +42,3 @@ use the old fashioned way
 
 TODO
 ----
-
-* Make a helper function that converts the LevelInfo and GameInfo structs to sane form.
-(Link named entities, remove the repetitive .Value spam)
