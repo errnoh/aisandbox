@@ -1,6 +1,7 @@
 // This file is part of The AI Sandbox Go Bindings by errnoh.
 // Copyright (c) 2012, errnoh@github
 // License: See LICENSE file.
+
 package aisandbox
 
 import (
@@ -54,6 +55,27 @@ func TestJSONGameInfo(t *testing.T) {
 	err := json.Unmarshal([]byte(json_gameinfo), &s)
 	if err != nil {
 		t.Errorf(err.Error())
+	}
+}
+
+func TestSimplify(t *testing.T) {
+	s := new(json_GameInfo)
+	err := json.Unmarshal([]byte(json_gameinfo), &s)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	gi := s.simplify()
+
+	test := [][]float64{
+		{float64(s.Value.Bots["Blue3"].Value.Health), gi.Team.Members["Blue3"].Health},
+		{float64(s.Value.Bots["Blue0"].Value.Health), gi.Team.Members["Blue0"].Health},
+		{float64(len(s.Value.Bots["Blue0"].Value.VisibleEnemies)), float64(len(gi.Team.Members["Blue0"].VisibleEnemies))},
+	}
+
+	for _, pair := range test {
+		if pair[0] != pair[1] {
+			t.Errorf("Simplify: Expected %d, got %d", pair[1], pair[0])
+		}
 	}
 }
 

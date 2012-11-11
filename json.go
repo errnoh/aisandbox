@@ -1,6 +1,7 @@
 // This file is part of The AI Sandbox Go Bindings by errnoh.
 // Copyright (c) 2012, errnoh@github
 // License: See LICENSE file.
+
 package aisandbox
 
 import (
@@ -8,9 +9,9 @@ import (
 )
 
 // Workaround for JSON strings that are null
-type Nstring string
+type nstring string
 
-func (n *Nstring) UnmarshalJSON(b []byte) (err error) {
+func (n *nstring) UnmarshalJSON(b []byte) (err error) {
 	if string(b) == "null" {
 		return nil
 	}
@@ -142,7 +143,15 @@ func (data *json_GameInfo) simplify() *GameInfo {
 
 	// TODO: map instigator field to target?
 	for _, event := range match.CombatEvents {
-		matchinfo.CombatEvents = append(matchinfo.CombatEvents, event.Value)
+		matchinfo.CombatEvents = append(
+			matchinfo.CombatEvents,
+			&CombatEvent{
+				Type:       event.Value.Type,
+				Instigator: string(event.Value.Instigator),
+				Subject:    event.Value.Subject,
+				Time:       event.Value.Time,
+			},
+		)
 	}
 
 	// GameInfo
@@ -177,7 +186,7 @@ type json_FlagInfo struct {
 		Name         string    `json:"name"`
 		Team         string    `json:"team"`
 		Position     []float64 `json:"position"`
-		Carrier      Nstring   `json:"carrier, omitempty"` // optional bot name, null if the flag is not being carried
+		Carrier      nstring   `json:"carrier, omitempty"` // optional bot name, null if the flag is not being carried
 		RespawnTimer float64   `json:"respawnTimer"`
 	} `json:"__value__"`
 }
@@ -189,8 +198,8 @@ type json_BotInfo struct {
 		Team            string    `json:"team"`
 		Position        []float64 `json:"position, omitempty"`        // optional, null if the bot is not visible
 		FacingDirection []float64 `json:"facingDirection, omitempty"` // optional, null if the bot is not visible
-		Flag            Nstring   `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
-		CurrentAction   Nstring   `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
+		Flag            nstring   `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
+		CurrentAction   nstring   `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
 		// values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
 		State          Nfloat64 `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
 		Health         Nfloat64 `json:"health, omitempty"`   // optional, null if the bot is not visible
@@ -210,6 +219,14 @@ type json_MatchInfo struct {
 }
 
 type json_MatchCombatEvent struct {
-	Class string       `json:"__class__"`
-	Value *CombatEvent `json:"__value__"`
+	Class string            `json:"__class__"`
+	Value *json_CombatEvent `json:"__value__"`
+}
+
+type json_CombatEvent struct {
+	Type       float64 `json:"type"`                  // values are 0 = none, 1 = bot killed, 2 = flag picked up, 3 = flag dropped (more to be added soon)
+	Instigator nstring `json:"instigator, omitempty"` // optional bot name that caused the event, null if the event was automatic (eg flag reset, bot respawn)
+	// can either be a FlagInfo or a BotInfo name
+	Subject string  `json:"subject"` // bot or flag name that was the subject of the event
+	Time    float64 `json:"time"`
 }
