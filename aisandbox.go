@@ -36,7 +36,6 @@ func run(name string, c chan interface{}) {
 	)
 	// Register with the server
 	conn.Write([]byte(name))
-	conn.Write([]byte("\n"))
 loop:
 	for {
 		if buffer, err = bufConn.ReadBytes('\n'); err != nil {
@@ -103,6 +102,7 @@ func listen(c chan interface{}) {
 			log.Println(err)
 			continue
 		}
+		conn.Write([]byte("<command>\n"))
 		conn.Write(trim(buffer))
 	}
 

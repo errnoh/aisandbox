@@ -34,3 +34,9 @@ Non-fatal errors from the library are logged to standard logger)
 'in' -channel will be closed when server sends <shutdown> message.
 
 connection to the server will be closed from your end when you close 'out' -channel
+
+TODO
+----
+
+* Make a helper function that converts the LevelInfo and GameInfo structs to sane form.
+(Link named entities, remove the repetitive .Value spam)
