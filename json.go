@@ -3,21 +3,21 @@
 // License: See LICENSE file.
 package aisandbox
 
-type JSON_GameInfo struct {
+type json_GameInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
-		Teams     map[string]*JSON_TeamInfo `json:"teams"` // map of team names to TeamInfo objects
+		Teams     map[string]*json_TeamInfo `json:"teams"` // map of team names to TeamInfo objects
 		Team      string                    `json:"team"`
 		EnemyTeam string                    `json:"enemyTeam"`
-		Flags     map[string]*JSON_FlagInfo `json:"flags"` // map of team names to FlagInfo objects
-		Bots      map[string]*JSON_BotInfo  `json:"bots"`  // map of bot names to BotInfo objects
-		Match     *JSON_MatchInfo           `json:"match"` // MatchInfo object
+		Flags     map[string]*json_FlagInfo `json:"flags"` // map of team names to FlagInfo objects
+		Bots      map[string]*json_BotInfo  `json:"bots"`  // map of bot names to BotInfo objects
+		Match     *json_MatchInfo           `json:"match"` // MatchInfo object
 	} `json:"__value__"`
 }
 
-// Parse JSON_GameInfo struct into more intuitive GameInfo struct
+// Parse json_GameInfo struct into more intuitive GameInfo struct
 // before sending it to the commander
-func (data *JSON_GameInfo) simplify() *GameInfo {
+func (data *json_GameInfo) simplify() *GameInfo {
 	v := data.Value
 	own := v.Teams[v.Team].Value
 	enemy := v.Teams[v.EnemyTeam].Value
@@ -130,12 +130,12 @@ func (data *JSON_GameInfo) simplify() *GameInfo {
 	}
 }
 
-type JSON_LevelInfo struct {
+type json_LevelInfo struct {
 	Class string     `json:"__class__"`
 	Value *LevelInfo `json:"__value__"`
 }
 
-type JSON_TeamInfo struct {
+type json_TeamInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
 		Name              string      `json:"name"`
@@ -147,7 +147,7 @@ type JSON_TeamInfo struct {
 	} `json:"__value__"`
 }
 
-type JSON_FlagInfo struct {
+type json_FlagInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
 		Name         string    `json:"name"`
@@ -158,7 +158,7 @@ type JSON_FlagInfo struct {
 	} `json:"__value__"`
 }
 
-type JSON_BotInfo struct {
+type json_BotInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
 		Name            string    `json:"name"`
@@ -176,16 +176,16 @@ type JSON_BotInfo struct {
 	} `json:"__value__"`
 }
 
-type JSON_MatchInfo struct {
+type json_MatchInfo struct {
 	Class string `json:"__class__"`
 	Value struct {
 		TimeRemaining     float64                  `json:"timeRemaining"`
 		TimeToNextRespawn float64                  `json:"timeToNextRespawn"`
-		CombatEvents      []*JSON_MatchCombatEvent `json:"combatEvents"` // list of MatchCombatEvent objects
+		CombatEvents      []*json_MatchCombatEvent `json:"combatEvents"` // list of MatchCombatEvent objects
 	} `json:"__value__"`
 }
 
-type JSON_MatchCombatEvent struct {
+type json_MatchCombatEvent struct {
 	Class string       `json:"__class__"`
 	Value *CombatEvent `json:"__value__"`
 }

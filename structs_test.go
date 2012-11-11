@@ -77,7 +77,7 @@ func TestServer(t *testing.T) {
 
 func TestJSON(t *testing.T) {
 	// A bit ugly to test because of the anonymous structs. It's not a problem when actually using it though.
-	expected_li := new(JSON_LevelInfo)
+	expected_li := new(json_LevelInfo)
 	expected_li.Class = "LevelInfo"
 	expected_li.Value = new(LevelInfo)
 	expected_li.Value.Width = 88
@@ -93,7 +93,7 @@ func TestJSON(t *testing.T) {
 	expected_li.Value.RunningSpeed = 6.0
 	expected_li.Value.FiringDistance = 15.0
 
-	li := new(JSON_LevelInfo)
+	li := new(json_LevelInfo)
 	err := json.Unmarshal([]byte(json_levelinfo), &li)
 	if err != nil {
 		t.Fatalf(err.Error())
