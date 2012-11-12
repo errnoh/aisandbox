@@ -50,7 +50,6 @@ type BotInfo struct {
 	Position        []float64
 	FacingDirection []float64
 	Flag            string
-	CurrentAction   string
 	State           float64 // values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
 	Health          float64
 	SeenLast        float64

@@ -66,7 +66,6 @@ func (data *json_GameInfo) simplify() *GameInfo {
 			Position:        v.Bots[name].Value.Position,
 			FacingDirection: v.Bots[name].Value.FacingDirection,
 			Flag:            string(v.Bots[name].Value.Flag),
-			CurrentAction:   string(v.Bots[name].Value.CurrentAction),
 			State:           float64(v.Bots[name].Value.State),
 			Health:          float64(v.Bots[name].Value.Health),
 			SeenLast:        float64(v.Bots[name].Value.SeenLast),
@@ -80,7 +79,6 @@ func (data *json_GameInfo) simplify() *GameInfo {
 			Position:        v.Bots[name].Value.Position,
 			FacingDirection: v.Bots[name].Value.FacingDirection,
 			Flag:            string(v.Bots[name].Value.Flag),
-			CurrentAction:   string(v.Bots[name].Value.CurrentAction),
 			State:           float64(v.Bots[name].Value.State),
 			Health:          float64(v.Bots[name].Value.Health),
 			SeenLast:        float64(v.Bots[name].Value.SeenLast),
@@ -204,7 +202,6 @@ type json_BotInfo struct {
 		Position        []float64 `json:"position, omitempty"`        // optional, null if the bot is not visible
 		FacingDirection []float64 `json:"facingDirection, omitempty"` // optional, null if the bot is not visible
 		Flag            nstring   `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
-		CurrentAction   nstring   `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
 		// values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
 		State          nfloat64 `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
 		Health         nfloat64 `json:"health, omitempty"`   // optional, null if the bot is not visible
