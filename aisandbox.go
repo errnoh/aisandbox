@@ -18,6 +18,16 @@ var (
 	bufConn *bufio.Reader
 )
 
+const (
+	STATE_UNKNOWN = iota
+	STATE_IDLE
+	STATE_DEFENDING
+	STATE_MOVING
+	STATE_ATTACKING
+	STATE_CHARGING
+	STATE_SHOOTING
+)
+
 // Runs in the background and listens for messages from conn
 // then parsing the JSON data into structs and forwarding those
 // to the commander through a channel.
@@ -81,8 +91,8 @@ loop:
 		case "<shutdown>":
 			if !initialized {
 				log.Printf("Unexpected message '%s' while waiting for initialize", message)
-				break loop
 			}
+			break loop
 		default:
 			log.Printf("unknown message received: '%s'", message)
 		}
@@ -143,21 +153,24 @@ func trim(b []byte) []byte {
 // NOTE: In case of shutdown the "in" -channel will be closed to inform commander that it should shut down.
 // NOTE: Close "out" channel when finished to close the connection to the server.
 // Params:
-// name - name of the commander
 // host, port - address and port of the server
+// name - name of the commander
 // Returns:
 // in - incoming updates, being either LevelInfo or GameInfo structs (possibly add control struct to inform about Shutdown etc)
 // out - outgoing channel where commander can send his commands, preferably Defend, Attack, Move or Charge structs.
-func Connect(name, host string, port int) (in, out chan interface{}, err error) {
+func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- interface{}, err error) {
 	conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Printf("Failed to connect to the server: %s", err.Error())
 		return
 	}
 	bufConn = bufio.NewReader(conn)
-	in = make(chan interface{})
-	out = make(chan interface{})
-	go run(name, in)
-	go listen(out)
+
+	i, o := make(chan interface{}), make(chan interface{})
+
+	in = i
+	out = o
+	go run(name, i)
+	go listen(o)
 	return
 }

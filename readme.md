@@ -39,6 +39,8 @@ use the old fashioned way
 * Non-fatal errors from the library are logged to standard logger)
 * 'in' -channel will be closed when server sends <shutdown> message.
 * Connection to the server will be closed from your end when you close 'out' -channel
+* in is type <-chan interface (receive only)
+* out is type chan<- interface (send only)
 
 TODO
 ----

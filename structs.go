@@ -90,7 +90,7 @@ type Attack struct {
 	Value struct {
 		Bot         string    `json:"bot"`
 		Target      []float64 `json:"target"`
-		LookAt      []float64 `json:"lookAt"`
+		LookAt      []float64 `json:"lookAt, omitempty"` // Optional
 		Description string    `json:"description"`
 	} `json:"__value__"`
 }
