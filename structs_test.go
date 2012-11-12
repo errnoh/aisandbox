@@ -117,19 +117,19 @@ func TestServer(t *testing.T) {
 		t.Fatalf("Timeout after 3 seconds")
 	}()
 
-	in, out, err := Connect("Bacon", "localhost", 41187)
+	in, out, err := Connect("localhost", 41187, "Bacon")
 	if err != nil {
 		// close(out)
 		t.Fatal(err)
 	}
 	defer close(out)
 
-	attack := new(Attack)
-	attack.Class = "Attack"
-	attack.Value.Bot = "red1"
-	attack.Value.Description = "Go shoot stuff"
-	attack.Value.LookAt = []float64{3, 5}
-	attack.Value.Target = []float64{23, 93}
+	attack := &Attack{
+		Bot:         "red1",
+		Description: "Go shoot stuff",
+		LookAt:      []float64{3, 5},
+		Target:      []float64{23, 93},
+	}
 	out <- attack
 
 	for v := range in {

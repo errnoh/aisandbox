@@ -18,9 +18,9 @@ func (n *nstring) UnmarshalJSON(b []byte) (err error) {
 	return json.Unmarshal(b, (*string)(n))
 }
 
-type Nfloat64 float64
+type nfloat64 float64
 
-func (n *Nfloat64) UnmarshalJSON(b []byte) (err error) {
+func (n *nfloat64) UnmarshalJSON(b []byte) (err error) {
 	if string(b) == "null" {
 		return nil
 	}
@@ -201,9 +201,9 @@ type json_BotInfo struct {
 		Flag            nstring   `json:"flag, omitempty"`            // optional flag name, null if the bot is not carrying a flag
 		CurrentAction   nstring   `json:"currentAction, omitempty"`   // optional current action name, null if the bot is not visible (will be removed)
 		// values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
-		State          Nfloat64 `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
-		Health         Nfloat64 `json:"health, omitempty"`   // optional, null if the bot is not visible
-		SeenLast       Nfloat64 `json:"seenlast, omitempty"` // time since the object was last seen, null if the object was never seen
+		State          nfloat64 `json:"state, omitempty"`    // optional current action name, null if the bot is not visible
+		Health         nfloat64 `json:"health, omitempty"`   // optional, null if the bot is not visible
+		SeenLast       nfloat64 `json:"seenlast, omitempty"` // time since the object was last seen, null if the object was never seen
 		VisibleEnemies []string `json:"visibleEnemies"`      // list of bot names for bots which this bot can see
 		SeenBy         []string `json:"seenBy"`              // list of bot names for bots which can see this bot
 	} `json:"__value__"`

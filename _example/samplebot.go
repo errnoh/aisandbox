@@ -5,7 +5,12 @@ import (
 	"github.com/errnoh/aisandbox"
 	"log"
 	"math/rand"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func main() {
 	var (
