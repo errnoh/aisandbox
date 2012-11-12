@@ -102,20 +102,11 @@ loop:
 }
 
 // Runs in the background and listens to the channel for commands sent by the commander.
-func listen(c chan interface{}) {
-	var (
-		buffer []byte
-		err    error
-	)
-
+func listen(c chan Command) {
 	for v := range c {
 		// NOTE: Possibly add a check that the message is one of the accepted commands.
-		if buffer, err = json.Marshal(v); err != nil {
-			log.Println(err)
-			continue
-		}
 		conn.Write([]byte("<command>\n"))
-		conn.Write(trim(buffer))
+		conn.Write(v.JSON())
 	}
 
 	conn.Close()
@@ -149,6 +140,18 @@ func trim(b []byte) []byte {
 	return b
 }
 
+func marshal(data interface{}) []byte {
+	var (
+		buffer []byte
+		err    error
+	)
+
+	if buffer, err = json.Marshal(data); err != nil {
+		log.Println(err)
+	}
+	return trim(buffer)
+}
+
 // Opens a connection to the server
 // NOTE: In case of shutdown the "in" -channel will be closed to inform commander that it should shut down.
 // NOTE: Close "out" channel when finished to close the connection to the server.
@@ -158,7 +161,7 @@ func trim(b []byte) []byte {
 // Returns:
 // in - incoming updates, being either LevelInfo or GameInfo structs (possibly add control struct to inform about Shutdown etc)
 // out - outgoing channel where commander can send his commands, preferably Defend, Attack, Move or Charge structs.
-func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- interface{}, err error) {
+func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- Command, err error) {
 	conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Printf("Failed to connect to the server: %s", err.Error())
@@ -166,7 +169,7 @@ func Connect(host string, port int, name string) (in <-chan interface{}, out cha
 	}
 	bufConn = bufio.NewReader(conn)
 
-	i, o := make(chan interface{}), make(chan interface{})
+	i, o := make(chan interface{}), make(chan Command)
 
 	in = i
 	out = o

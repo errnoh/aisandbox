@@ -73,11 +73,10 @@ func main() {
 }
 
 func attack(name string, coords []float64, description string) *aisandbox.Attack {
-	a := new(aisandbox.Attack)
-	a.Class = "Attack"
-	a.Value.Bot = name
-	a.Value.Target = coords
-	a.Value.LookAt = coords
-	a.Value.Description = fmt.Sprintf("Attacking %s", description)
-	return a
+	return &aisandbox.Attack{
+		Bot:         name,
+		Target:      coords,
+		LookAt:      coords,
+		Description: fmt.Sprintf("Attacking %s", description),
+	}
 }

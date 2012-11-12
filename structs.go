@@ -67,39 +67,81 @@ type CombatEvent struct {
 	Time       float64
 }
 
+// Commands
+
+type Command interface {
+	JSON() []byte
+}
+
 type Defend struct {
-	Class string `json:"__class__"`
-	Value struct {
-		Bot             string    `json:"bot"`
-		FacingDirection []float64 `json:"facingDirection"`
-		Description     string    `json:"description"`
-	} `json:"__value__"`
+	Bot             string    `json:"bot"`
+	FacingDirection []float64 `json:"facingDirection"`
+	Description     string    `json:"description"`
+}
+
+func (c *Defend) JSON() []byte {
+	cmd := struct {
+		Class string  `json:"__class__"`
+		Value *Defend `json:"__value__"`
+	}{
+		Class: "Defend",
+		Value: c,
+	}
+
+	return marshal(cmd)
 }
 
 type Move struct {
-	Class string `json:"__class__"`
-	Value struct {
-		Bot         string    `json:"bot"`
-		Target      []float64 `json:"target"`
-		Description string    `json:"description"`
-	} `json:"__value__"`
+	Bot         string    `json:"bot"`
+	Target      []float64 `json:"target"`
+	Description string    `json:"description"`
+}
+
+func (c *Move) JSON() []byte {
+	cmd := struct {
+		Class string `json:"__class__"`
+		Value *Move  `json:"__value__"`
+	}{
+		Class: "Move",
+		Value: c,
+	}
+
+	return marshal(cmd)
 }
 
 type Attack struct {
-	Class string `json:"__class__"`
-	Value struct {
-		Bot         string    `json:"bot"`
-		Target      []float64 `json:"target"`
-		LookAt      []float64 `json:"lookAt, omitempty"` // Optional
-		Description string    `json:"description"`
-	} `json:"__value__"`
+	Bot         string    `json:"bot"`
+	Target      []float64 `json:"target"`
+	LookAt      []float64 `json:"lookAt, omitempty"` // Optional
+	Description string    `json:"description"`
+}
+
+func (c *Attack) JSON() []byte {
+	cmd := struct {
+		Class string  `json:"__class__"`
+		Value *Attack `json:"__value__"`
+	}{
+		Class: "Attack",
+		Value: c,
+	}
+
+	return marshal(cmd)
 }
 
 type Charge struct {
-	Class string `json:"__class__"`
-	Value struct {
-		Bot         string    `json:"bot"`
-		Target      []float64 `json:"target"`
-		Description string    `json:"description"`
-	} `json:"__value__"`
+	Bot         string    `json:"bot"`
+	Target      []float64 `json:"target"`
+	Description string    `json:"description"`
+}
+
+func (c *Charge) JSON() []byte {
+	cmd := struct {
+		Class string  `json:"__class__"`
+		Value *Charge `json:"__value__"`
+	}{
+		Class: "Charge",
+		Value: c,
+	}
+
+	return marshal(cmd)
 }
