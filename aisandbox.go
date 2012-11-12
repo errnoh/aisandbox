@@ -12,12 +12,6 @@ import (
 	"strings"
 )
 
-var (
-	conn net.Conn
-	// Buffer the connection so we can read it line by line
-	bufConn *bufio.Reader
-)
-
 const (
 	STATE_UNKNOWN = iota
 	STATE_IDLE
@@ -31,7 +25,7 @@ const (
 // Runs in the background and listens for messages from conn
 // then parsing the JSON data into structs and forwarding those
 // to the commander through a channel.
-func run(name string, c chan interface{}) {
+func listenForGameData(conn net.Conn, name string, c chan interface{}) {
 	var (
 		err         error
 		buffer      []byte
@@ -39,9 +33,12 @@ func run(name string, c chan interface{}) {
 		gameinfo    *json_GameInfo
 		levelinfo   *json_LevelInfo
 		initialized bool
+		bufConn     *bufio.Reader
 	)
 	// Register with the server
 	conn.Write([]byte(name))
+	bufConn = bufio.NewReader(conn)
+
 loop:
 	for {
 		if buffer, err = bufConn.ReadBytes('\n'); err != nil {
@@ -59,13 +56,13 @@ loop:
 			}
 			// Read level info
 			levelinfo = new(json_LevelInfo)
-			if err = parsejson(&levelinfo); err != nil {
+			if err = jsonFromBuffer(bufConn, &levelinfo); err != nil {
 				log.Println(err)
 				continue
 			}
 			// Read game info
 			gameinfo = new(json_GameInfo)
-			if err = parsejson(&gameinfo); err != nil {
+			if err = jsonFromBuffer(bufConn, &gameinfo); err != nil {
 				log.Println(err)
 				continue
 			}
@@ -79,7 +76,7 @@ loop:
 				log.Printf("Unexpected message '%s' while waiting for initialize", message)
 			}
 			gameinfo = new(json_GameInfo)
-			if err = parsejson(&gameinfo); err != nil {
+			if err = jsonFromBuffer(bufConn, &gameinfo); err != nil {
 				log.Println(err)
 				continue
 			}
@@ -98,7 +95,7 @@ loop:
 }
 
 // Runs in the background and listens to the channel for commands sent by the commander.
-func listen(c chan Command) {
+func listenForPlayerCommands(conn net.Conn, c chan Command) {
 	for v := range c {
 		conn.Write([]byte("<command>\n"))
 		conn.Write(v.JSON())
@@ -108,7 +105,7 @@ func listen(c chan Command) {
 }
 
 // NOTE: AiSandbox spec says that messages can't contain newlines.
-func parsejson(target interface{}) (err error) {
+func jsonFromBuffer(bufConn *bufio.Reader, target interface{}) (err error) {
 	var buffer []byte
 
 	if buffer, err = bufConn.ReadBytes('\n'); err != nil {
@@ -157,18 +154,20 @@ func marshal(data interface{}) []byte {
 // in - incoming updates, being either LevelInfo or GameInfo structs (possibly add control struct to inform about Shutdown etc)
 // out - outgoing channel where commander can send his commands, preferably Defend, Attack, Move or Charge structs.
 func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- Command, err error) {
+	var conn net.Conn
+
 	conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Printf("Failed to connect to the server: %s", err.Error())
 		return
 	}
-	bufConn = bufio.NewReader(conn)
+	// Buffer the connection so we can read it line by line
 
 	i, o := make(chan interface{}), make(chan Command)
 
 	in = i
 	out = o
-	go run(name, i)
-	go listen(o)
+	go listenForGameData(conn, name, i)
+	go listenForPlayerCommands(conn, o)
 	return
 }
