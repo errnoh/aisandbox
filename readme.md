@@ -11,9 +11,9 @@ Download with
     go get github.com/errnoh/aisandbox
 
 
-Then import the library to your code and call
+Then import the library to your code and call Connect() with host, port and bot name as parameters.
 
-    in, out, err := aisandbox.Connect("TerminatorKillerX", "serverhostname", port)
+    in, out, err := aisandbox.Connect("serverhostname", port, "TerminatorKillerX")
 
 in: Channel where you receive parsed structs coming from the server.
 
