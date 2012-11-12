@@ -4,11 +4,13 @@
 
 package aisandbox
 
+// NOTE: This file contains unexported things that are used when parsing JSON data from the game server.
+
 import (
 	"encoding/json"
 )
 
-// Workaround for JSON strings that are null
+// Workaround for null JSON strings
 type nstring string
 
 func (n *nstring) UnmarshalJSON(b []byte) (err error) {
@@ -18,6 +20,7 @@ func (n *nstring) UnmarshalJSON(b []byte) (err error) {
 	return json.Unmarshal(b, (*string)(n))
 }
 
+// Workaround for null JSON floats
 type nfloat64 float64
 
 func (n *nfloat64) UnmarshalJSON(b []byte) (err error) {
@@ -26,6 +29,8 @@ func (n *nfloat64) UnmarshalJSON(b []byte) (err error) {
 	}
 	return json.Unmarshal(b, (*float64)(n))
 }
+
+// Unexported structs where the raw JSON is parsed.
 
 type json_GameInfo struct {
 	Class string `json:"__class__"`

@@ -4,6 +4,10 @@
 
 package aisandbox
 
+// NOTE: This file contains exported structs
+
+// Exported structs that contain the server messages
+
 type LevelInfo struct {
 	Width              float64                `json:"width"`
 	Height             float64                `json:"height"`
@@ -67,7 +71,7 @@ type CombatEvent struct {
 	Time       float64
 }
 
-// Commands
+// Command structs for the commander
 
 type Command interface {
 	JSON() []byte

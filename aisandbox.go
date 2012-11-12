@@ -31,10 +31,6 @@ const (
 // Runs in the background and listens for messages from conn
 // then parsing the JSON data into structs and forwarding those
 // to the commander through a channel.
-//
-// NOTE: Possibly add:
-// "Control" struct to inform the commander for shutdown etc.
-// "Initialize" struct that holds both LevelInfo and GameInfo struct and is only sent on <Initialize>
 func run(name string, c chan interface{}) {
 	var (
 		err         error
@@ -104,7 +100,6 @@ loop:
 // Runs in the background and listens to the channel for commands sent by the commander.
 func listen(c chan Command) {
 	for v := range c {
-		// NOTE: Possibly add a check that the message is one of the accepted commands.
 		conn.Write([]byte("<command>\n"))
 		conn.Write(v.JSON())
 	}

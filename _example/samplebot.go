@@ -74,7 +74,8 @@ func main() {
 			}
 		}
 	}
-
+	fmt.Println("Received <shutdown> from server")
+	close(out)
 }
 
 func attack(name string, coords []float64, description string) *aisandbox.Attack {
