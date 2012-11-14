@@ -81,7 +81,7 @@ func main() {
 func attack(name string, coords []float64, description string) *aisandbox.Attack {
 	return &aisandbox.Attack{
 		Bot:         name,
-		Target:      coords,
+		Target:      [][]float64{coords},
 		LookAt:      coords,
 		Description: fmt.Sprintf("Attacking %s", description),
 	}

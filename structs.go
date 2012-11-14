@@ -95,9 +95,9 @@ func (c *Defend) JSON() []byte {
 }
 
 type Move struct {
-	Bot         string    `json:"bot"`
-	Target      []float64 `json:"target"`
-	Description string    `json:"description"`
+	Bot         string      `json:"bot"`
+	Target      [][]float64 `json:"target"`
+	Description string      `json:"description"`
 }
 
 func (c *Move) JSON() []byte {
@@ -113,10 +113,10 @@ func (c *Move) JSON() []byte {
 }
 
 type Attack struct {
-	Bot         string    `json:"bot"`
-	Target      []float64 `json:"target"`
-	LookAt      []float64 `json:"lookAt, omitempty"` // Optional
-	Description string    `json:"description"`
+	Bot         string      `json:"bot"`
+	Target      [][]float64 `json:"target"`
+	LookAt      []float64   `json:"lookAt, omitempty"` // Optional
+	Description string      `json:"description"`
 }
 
 func (c *Attack) JSON() []byte {
@@ -132,9 +132,9 @@ func (c *Attack) JSON() []byte {
 }
 
 type Charge struct {
-	Bot         string    `json:"bot"`
-	Target      []float64 `json:"target"`
-	Description string    `json:"description"`
+	Bot         string      `json:"bot"`
+	Target      [][]float64 `json:"target"`
+	Description string      `json:"description"`
 }
 
 func (c *Charge) JSON() []byte {
