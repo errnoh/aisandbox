@@ -36,6 +36,7 @@ type TeamInfo struct {
 	FlagSpawnLocation []float64
 	FlagScoreLocation []float64
 	BotSpawnArea      [][]float64
+	Score             float64
 }
 
 type FlagInfo struct {
@@ -60,6 +61,7 @@ type BotInfo struct {
 type MatchInfo struct {
 	TimeRemaining     float64
 	TimeToNextRespawn float64
+	TimePassed        float64
 	CombatEvents      []*CombatEvent
 }
 

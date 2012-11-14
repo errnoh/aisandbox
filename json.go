@@ -126,6 +126,7 @@ func (data *json_GameInfo) simplify() *GameInfo {
 		FlagSpawnLocation: own.FlagSpawnLocation,
 		FlagScoreLocation: own.FlagScoreLocation,
 		BotSpawnArea:      own.BotSpawnArea,
+		Score:             match.Scores[own.Name],
 	}
 
 	enemyteaminfo := &TeamInfo{
@@ -135,6 +136,7 @@ func (data *json_GameInfo) simplify() *GameInfo {
 		FlagSpawnLocation: enemy.FlagSpawnLocation,
 		FlagScoreLocation: enemy.FlagScoreLocation,
 		BotSpawnArea:      enemy.BotSpawnArea,
+		Score:             match.Scores[enemy.Name],
 	}
 
 	// MatchInfo
@@ -142,6 +144,7 @@ func (data *json_GameInfo) simplify() *GameInfo {
 	matchinfo := &MatchInfo{
 		TimeRemaining:     match.TimeRemaining,
 		TimeToNextRespawn: match.TimeToNextRespawn,
+		TimePassed:        match.TimePassed,
 	}
 
 	// TODO: map instigator field to target?
@@ -217,6 +220,8 @@ type json_MatchInfo struct {
 		TimeRemaining     float64                  `json:"timeRemaining"`
 		TimeToNextRespawn float64                  `json:"timeToNextRespawn"`
 		CombatEvents      []*json_MatchCombatEvent `json:"combatEvents"` // list of MatchCombatEvent objects
+		TimePassed        float64                  `json:"timePassed"`
+		Scores            map[string]float64       `json:"scores"`
 	} `json:"__value__"`
 }
 
