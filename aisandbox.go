@@ -36,7 +36,6 @@ func listenForGameData(conn net.Conn, name string, c chan interface{}) {
 		bufConn     *bufio.Reader
 	)
 	// Register with the server
-	conn.Write([]byte(name))
 	bufConn = bufio.NewReader(conn)
 
 loop:
@@ -50,6 +49,24 @@ loop:
 		case "":
 			log.Println("Empty line from conn")
 			continue loop
+		case "<connect>":
+			// Server handshake
+			connect := new(json_ConnectServer)
+			if err = jsonFromBuffer(bufConn, &connect); err != nil {
+				log.Println(err)
+				continue
+			}
+
+			reply := &json_ClientConnect{
+				Class: "ConnectClient",
+			}
+			reply.Value.CommanderName = name
+			reply.Value.Language = "Go"
+			b, _ := json.Marshal(reply)
+
+			// Client handshake
+			conn.Write([]byte("<connect>\n"))
+			conn.Write(trim(b))
 		case "<initialize>":
 			if initialized {
 				log.Printf("Unexpected initialize message '%s'", message)

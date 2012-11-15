@@ -17,7 +17,7 @@ func main() {
 		width, height float64
 	)
 
-	in, out, err := aisandbox.Connect("localhost", 5557, "GoRandom")
+	in, out, err := aisandbox.Connect("localhost", 41041, "GoRandom")
 	if err != nil {
 		log.Fatalln(err)
 	}

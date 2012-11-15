@@ -128,7 +128,7 @@ func TestServer(t *testing.T) {
 		Bot:         "red1",
 		Description: "Go shoot stuff",
 		LookAt:      []float64{3, 5},
-		Target:      []float64{23, 93},
+		Target:      [][]float64{{23, 93}},
 	}
 	out <- attack
 

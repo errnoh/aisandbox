@@ -237,3 +237,18 @@ type json_CombatEvent struct {
 	Subject string  `json:"subject"` // bot or flag name that was the subject of the event
 	Time    float64 `json:"time"`
 }
+
+type json_ConnectServer struct {
+	Class string `json:"__class__"`
+	Value struct {
+		ProtocolVersion string `json:"protocolVersion"`
+	} `json:"__value__"`
+}
+
+type json_ClientConnect struct {
+	Class string `json:"__class__"`
+	Value struct {
+		CommanderName string `json:"commanderName"`
+		Language      string `json:"language"`
+	} `json:"__value__"`
+}
