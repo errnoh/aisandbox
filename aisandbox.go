@@ -20,6 +20,12 @@ const (
 	STATE_ATTACKING
 	STATE_CHARGING
 	STATE_SHOOTING
+
+	// If the api_version conflicts with the one sent from server,
+	// try upgrading both the AI sandbox and these bindings.
+	// If these bindings are still using old version, feel free to contact me at IRC.
+	// I can most probably be found at #gameai on Freenode.
+	api_version = "1.0"
 )
 
 // Runs in the background and listens for messages from conn
@@ -55,6 +61,11 @@ loop:
 			if err = jsonFromBuffer(bufConn, &connect); err != nil {
 				log.Println(err)
 				continue
+			}
+
+			if api_version != connect.Value.ProtocolVersion {
+				log.Printf("Wrong json api version.\nServer: %s\nClient: %s", connect.Value.ProtocolVersion, api_version)
+				break loop
 			}
 
 			reply := &json_ClientConnect{
