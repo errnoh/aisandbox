@@ -37,7 +37,7 @@ Notes
 
 * Easy way to wrap the commands is to use function signature that looks something like:
 
-    func attack(name string, direction []float64, description string, coords ...[]float64)
+        func attack(name string, direction []float64, description string, target ...[]float64)
 
 That way you can call the command with as many waypoints as you can. See the bot in _example for.. example.
 
