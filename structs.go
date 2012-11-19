@@ -11,7 +11,7 @@ package aisandbox
 type LevelInfo struct {
 	Width              float64                `json:"width"`
 	Height             float64                `json:"height"`
-	BlockHeights       [][]float64            `json:"blockHeights"`       // a 'width' list of 'height' lengthed list of integers
+	BlockHeights       [][]float64            `json:"blockHeights"`       // a 'width' list of 'height' lengthed list of integers (BlockHeights[x][y])
 	TeamNames          []string               `json:"teamNames"`          // list of team names
 	FlagSpawnLocations map[string][]float64   `json:"flagSpawnLocations"` // map of team name to position
 	FlagScoreLocations map[string][]float64   `json:"flagScoreLocations"` // map of team name to position
@@ -21,6 +21,8 @@ type LevelInfo struct {
 	WalkingSpeed       float64                `json:"walkingSpeed"`
 	RunningSpeed       float64                `json:"runningSpeed"`
 	FiringDistance     float64                `json:"firingDistance"`
+	GameLength         float64                `json:"gameLength"`         // the time (seconds) that a game will last
+	InitializationTime float64                `json:"initializationTime"` // the time (seconds) allowed to the commanders for initialization
 }
 
 type GameInfo struct {

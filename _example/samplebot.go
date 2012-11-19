@@ -15,6 +15,7 @@ func init() {
 func main() {
 	var (
 		width, height float64
+		initialized   bool
 	)
 
 	in, out, err := aisandbox.Connect("localhost", 41041, "GoRandom")
@@ -26,6 +27,7 @@ func main() {
 		switch m := msg.(type) {
 		// When LevelInfo is received..
 		case *aisandbox.LevelInfo:
+			// Process LevelInfo data
 			log.Println("Level loaded")
 			width, height = m.Width, m.Height
 			log.Println(width, height)
@@ -35,13 +37,21 @@ func main() {
 			var text string
 			var team *aisandbox.TeamInfo
 
-			for _, bot := range m.Team.Members {
-				if bot.Health == 0 {
-					continue
-				}
+			// After getting the first GameInfo packet, process it if you need and send server information that you have processed the data
+			if !initialized {
+				// Process initial GameInfo data here
+				// doStuff()
+				initialized = true
 
-				// Only update command 1/10 of the time.
-				if r := rand.Float64(); r > 0.1 {
+				// Inform server that you're ready.
+				aisandbox.Ready()
+				// Don't send commands yet, wait for first actual game tick.
+				continue
+			}
+
+			for _, bot := range m.Team.Members {
+				// Skip dead bots and bots who already have something to do.
+				if bot.Health == 0 || bot.State > 1 {
 					continue
 				}
 
@@ -58,19 +68,19 @@ func main() {
 				case 0:
 					// Attack current flag position of target team
 					target = team.Flag.Position
-					text = fmt.Sprintf("%s flag.", team.Name)
+					text = fmt.Sprintf("Attacking %s flag.", team.Name)
 
 				case 1:
 					// Attack spawn location of target teams flag
 					target = team.FlagScoreLocation
-					text = fmt.Sprintf("%s score location.", team.Name)
+					text = fmt.Sprintf("Attacking %s score location.", team.Name)
 				case 2:
 					// Attack random point on the map
 					// XXX: Doesn't check if target is possible.
 					target = []float64{rand.Float64() * width, rand.Float64() * height}
-					text = fmt.Sprintf("[%.2f, %.2f].", target[0], target[1])
+					text = fmt.Sprintf("Attacking [%.2f, %.2f].", target[0], target[1])
 				}
-				out <- attack(bot.Name, target, text)
+				out <- attack(bot.Name, nil, text, target)
 			}
 		}
 	}
@@ -78,11 +88,14 @@ func main() {
 	close(out)
 }
 
-func attack(name string, coords []float64, description string) *aisandbox.Attack {
-	return &aisandbox.Attack{
+func attack(name string, direction []float64, description string, coords ...[]float64) *aisandbox.Attack {
+	command := &aisandbox.Attack{
 		Bot:         name,
-		Target:      [][]float64{coords},
-		LookAt:      coords,
-		Description: fmt.Sprintf("Attacking %s", description),
+		Target:      coords,
+		Description: description,
 	}
+	if direction != nil || len(direction) != 2 {
+		command.LookAt = direction
+	}
+	return command
 }

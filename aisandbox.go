@@ -25,13 +25,17 @@ const (
 	// try upgrading both the AI sandbox and these bindings.
 	// If these bindings are still using old version, feel free to contact me at IRC.
 	// I can most probably be found at #gameai on Freenode.
-	api_version = "1.0"
+	api_version = "1.1"
+)
+
+var (
+	conn net.Conn
 )
 
 // Runs in the background and listens for messages from conn
 // then parsing the JSON data into structs and forwarding those
 // to the commander through a channel.
-func listenForGameData(conn net.Conn, name string, c chan interface{}) {
+func listenForGameData(name string, c chan interface{}) {
 	var (
 		err         error
 		buffer      []byte
@@ -123,7 +127,7 @@ loop:
 }
 
 // Runs in the background and listens to the channel for commands sent by the commander.
-func listenForPlayerCommands(conn net.Conn, c chan Command) {
+func listenForPlayerCommands(c chan Command) {
 	for v := range c {
 		conn.Write([]byte("<command>\n"))
 		conn.Write(v.JSON())
@@ -172,6 +176,15 @@ func marshal(data interface{}) []byte {
 	return trim(buffer)
 }
 
+// Inform the server that the client has processed initialization data and is ready to play.
+//
+// NOTE: The server may start the game before it reaches this ready message depending on the game configuration
+//       There is InitializationTime field in the LevelInfo that contains the information how long the client
+//       can spend on processing the initial data before server starts the game by itself.
+func Ready() {
+	conn.Write([]byte("<ready>\n"))
+}
+
 // Opens a connection to the server
 // NOTE: In case of shutdown the "in" -channel will be closed to inform commander that it should shut down.
 // NOTE: Close "out" channel when finished to close the connection to the server.
@@ -182,8 +195,6 @@ func marshal(data interface{}) []byte {
 // in - incoming updates, being either LevelInfo or GameInfo structs (possibly add control struct to inform about Shutdown etc)
 // out - outgoing channel where commander can send his commands, preferably Defend, Attack, Move or Charge structs.
 func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- Command, err error) {
-	var conn net.Conn
-
 	conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Printf("Failed to connect to the server: %s", err.Error())
@@ -195,7 +206,7 @@ func Connect(host string, port int, name string) (in <-chan interface{}, out cha
 
 	in = i
 	out = o
-	go listenForGameData(conn, name, i)
-	go listenForPlayerCommands(conn, o)
+	go listenForGameData(name, i)
+	go listenForPlayerCommands(o)
 	return
 }
