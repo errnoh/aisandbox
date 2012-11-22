@@ -80,22 +80,21 @@ func main() {
 					target = []float64{rand.Float64() * width, rand.Float64() * height}
 					text = fmt.Sprintf("Attacking [%.2f, %.2f].", target[0], target[1])
 				}
-				out <- attack(bot.Name, nil, text, target)
+
+				r = rand.Intn(4)
+				switch r {
+				case 0:
+					out <- aisandbox.NewMove(bot.Name, text, target)
+				case 1:
+					out <- aisandbox.NewAttack(bot.Name, text, nil, target)
+				case 2:
+					out <- aisandbox.NewDefend(bot.Name, "Defending", []float64{1, 1}, []float64{1, -1, 1}, []float64{-1, -1, 2}, []float64{-1, 1, 0})
+				case 3:
+					out <- aisandbox.NewCharge(bot.Name, text, target)
+				}
 			}
 		}
 	}
 	fmt.Println("Received <shutdown> from server")
 	close(out)
-}
-
-func attack(name string, direction []float64, description string, coords ...[]float64) *aisandbox.Attack {
-	command := &aisandbox.Attack{
-		Bot:         name,
-		Target:      coords,
-		Description: description,
-	}
-	if direction != nil || len(direction) != 2 {
-		command.LookAt = direction
-	}
-	return command
 }

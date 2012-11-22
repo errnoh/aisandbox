@@ -4,6 +4,11 @@
 
 package aisandbox
 
+import (
+	"errors"
+	"fmt"
+)
+
 // NOTE: This file contains exported structs
 
 // Exported structs that contain the server messages
@@ -68,7 +73,7 @@ type MatchInfo struct {
 }
 
 type CombatEvent struct {
-	Type       float64
+	Type       float64 // values are 0 = none, 1 = bot killed, 2 = flag picked up, 3 = flag dropped 4 = flag captured, 5 = flag restored, 6 = bot respawned
 	Instigator string
 	Subject    string // can either be a FlagInfo or a BotInfo name
 	Time       float64
@@ -80,10 +85,40 @@ type Command interface {
 	JSON() []byte
 }
 
+// Since update 1.4 Defend can be passed as many [direction], duration pairs as one wants.
+// That's not really a slice of any actual type, so Defend became a bit more complicated.
+// Because of this, constructors are added to the API.
+//
+// If you still want to do manual constructor, there's a sample below.
+
+/*
+	Example defend:
+	&Defend{
+		Bot:		"Bacon",
+		Description:	"Mmmm",
+		FacingDirections: []FacingDirection{
+			FacingDirection{[]float64{1.2, 2}, 3.7},
+			FacingDirection{[]float64{4, 5.1}, 6.3},
+		},
+	}
+*/
 type Defend struct {
-	Bot             string    `json:"bot"`
-	FacingDirection []float64 `json:"facingDirection"`
-	Description     string    `json:"description"`
+	Bot              string             `json:"bot"`
+	FacingDirections []*FacingDirection `json:"facingDirections"`
+	Description      string             `json:"description"`
+}
+
+type FacingDirection struct {
+	Direction []float64
+	Duration  float64
+}
+
+func (fd FacingDirection) MarshalJSON() (b []byte, err error) {
+	if len(fd.Direction) != 2 {
+		return nil, errors.New("Invalid coordinates in FacingDirection")
+	}
+	return []byte(fmt.Sprintf("[[%f, %f], %f]", fd.Direction[0], fd.Direction[1], fd.Duration)), nil
+
 }
 
 func (c *Defend) JSON() []byte {

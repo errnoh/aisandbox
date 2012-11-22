@@ -13,6 +13,15 @@ import (
 )
 
 const (
+	// If the api_version conflicts with the one sent from server,
+	// try upgrading both the AI sandbox and these bindings.
+	// If these bindings are still using old version, feel free to contact me at IRC.
+	// I can most probably be found at #gameai on Freenode.
+	api_version = "1.2"
+)
+
+// Bot states
+const (
 	STATE_UNKNOWN = iota
 	STATE_IDLE
 	STATE_DEFENDING
@@ -20,12 +29,17 @@ const (
 	STATE_ATTACKING
 	STATE_CHARGING
 	STATE_SHOOTING
+)
 
-	// If the api_version conflicts with the one sent from server,
-	// try upgrading both the AI sandbox and these bindings.
-	// If these bindings are still using old version, feel free to contact me at IRC.
-	// I can most probably be found at #gameai on Freenode.
-	api_version = "1.1"
+// CombatEvent types
+const (
+	EVENT_NONE = iota
+	EVENT_KILL
+	EVENT_FLAG_PICKED
+	EVENT_FLAG_DROPPED
+	EVENT_FLAG_CAPTURED
+	EVENT_FLAG_RESTORED
+	EVENT_RESPAWN
 )
 
 var (
