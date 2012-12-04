@@ -5,6 +5,8 @@ import (
 	"github.com/errnoh/aisandbox"
 	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -16,9 +18,23 @@ func main() {
 	var (
 		width, height float64
 		initialized   bool
+		err           error
+
+		host = "localhost"
+		port = 41041
 	)
 
-	in, out, err := aisandbox.Connect("localhost", 41041, "GoRandom")
+	// Competition server needs to be able to use custom host and port.
+	// These should be given as first and second command-line arguments when launching the bot.
+	if len(os.Args) >= 3 {
+		host = os.Args[1]
+		port, err = strconv.Atoi(os.Args[2])
+		if err != nil {
+			log.Fatalf("Invalid port number: %s", os.Args[2])
+		}
+	}
+
+	in, out, err := aisandbox.Connect(host, port, "GoRandom")
 	if err != nil {
 		log.Fatalln(err)
 	}

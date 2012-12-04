@@ -31,6 +31,21 @@ When you're done processing those, use:
 
 To inform the server that you're ready to start the game.
 
+NOTE FOR THE COMPETITION:
+Your bot should support custom host and port as command-line arguments.
+Hostname as first argument and port number as second.
+See example bot for.. example.
+
+Constructors
+------------
+
+Since JSON API 1.2, there are constructors for each Command type.
+Each one accepts any amount of []float64 coordinates as last parameter.
+Coordinates are in []float64{x,y} format
+NewDefend also allows third value inside the slice, resulting in slice that looks like []float64{x,y,duration}
+
+See example bot for sample usage.
+(Example doesn't pass multiple waypoints for move/charge/attack commands but those are supported as well.)
 
 Notes
 -----
