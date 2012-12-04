@@ -28,6 +28,7 @@ type LevelInfo struct {
 	FiringDistance     float64                `json:"firingDistance"`
 	GameLength         float64                `json:"gameLength"`         // the time (seconds) that a game will last
 	InitializationTime float64                `json:"initializationTime"` // the time (seconds) allowed to the commanders for initialization
+	RespawnTime        float64                `json:"respawnTime"`
 }
 
 type GameInfo struct {

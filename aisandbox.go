@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 const (
@@ -59,7 +60,7 @@ func listenForGameData(name string, c chan interface{}) {
 		initialized bool
 		bufConn     *bufio.Reader
 	)
-	// Register with the server
+	// Buffer the connection so we can read it line by line
 	bufConn = bufio.NewReader(conn)
 
 loop:
@@ -209,12 +210,16 @@ func Ready() {
 // in - incoming updates, being either LevelInfo or GameInfo structs (possibly add control struct to inform about Shutdown etc)
 // out - outgoing channel where commander can send his commands, preferably Defend, Attack, Move or Charge structs.
 func Connect(host string, port int, name string) (in <-chan interface{}, out chan<- Command, err error) {
-	conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+	for start := time.Now(); time.Since(start) < time.Second*10; time.Sleep(time.Millisecond * 500) {
+		conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		log.Printf("Failed to connect to the server: %s", err.Error())
 		return
 	}
-	// Buffer the connection so we can read it line by line
 
 	i, o := make(chan interface{}), make(chan Command)
 

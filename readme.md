@@ -50,19 +50,12 @@ See example bot for sample usage.
 Notes
 -----
 
-* Easy way to wrap the commands is to use function signature that looks something like:
-
-        func attack(name string, direction []float64, description string, target ...[]float64)
-
-That way you can call the command with as many waypoints as you can. See the bot in _example for.. example.
-
 * _example folder contains a sample bot which you can use as an example.
 * Non-fatal errors from the library are logged to standard logger)
 * 'in' -channel will be closed when server sends <shutdown> message.
 * Connection to the server will be closed from your end when you close 'out' -channel
 * in is type <-chan interface (receive only)
 * out is type chan<- aisandbox.Command (send only)
-* there are predefined structs for each of the four commands that satisfy aisandbox.Command interface.
 
 Support
 -------
