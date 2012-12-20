@@ -21,7 +21,7 @@ type LevelInfo struct {
 	FlagSpawnLocations map[string][]float64   `json:"flagSpawnLocations"` // map of team name to position
 	FlagScoreLocations map[string][]float64   `json:"flagScoreLocations"` // map of team name to position
 	BotSpawnAreas      map[string][][]float64 `json:"botSpawnAreas"`      // map of team name to min and max positions
-	FOVangle           float64                `json:"FOVangle"`
+	FieldOfViewAngles  []float64              `json:"fieldOfViewAngles"`
 	CharacterRadius    float64                `json:"characterRadius"`
 	WalkingSpeed       float64                `json:"walkingSpeed"`
 	RunningSpeed       float64                `json:"runningSpeed"`
@@ -59,7 +59,7 @@ type BotInfo struct {
 	Position        []float64
 	FacingDirection []float64
 	Flag            string
-	State           float64 // values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting
+	State           float64 // values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting, 7 = taking orders, 8 = holding
 	Health          float64
 	SeenLast        float64
 	VisibleEnemies  []*BotInfo
