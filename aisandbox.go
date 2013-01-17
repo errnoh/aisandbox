@@ -18,7 +18,7 @@ const (
 	// try upgrading both the AI sandbox and these bindings.
 	// If these bindings are still using old version, feel free to contact me at IRC.
 	// I can most probably be found at #gameai on Freenode.
-	api_version = "1.3"
+	api_version = "1.4"
 )
 
 // Bot states
@@ -32,6 +32,7 @@ const (
 	STATE_SHOOTING
 	TAKING_ORDERS
 	STATE_HOLDING
+	STATE_DEAD
 )
 
 // CombatEvent types

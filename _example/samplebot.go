@@ -67,7 +67,7 @@ func main() {
 
 			for _, bot := range m.Team.Members {
 				// Skip dead bots and bots who already have something to do.
-				if bot.Health == 0 || bot.State > 1 {
+				if bot.State > 1 {
 					continue
 				}
 
